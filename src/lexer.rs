@@ -15,14 +15,13 @@ pub enum TokenType {
 #[derive(Debug, PartialEq)]
 pub struct Token {
     pub kind: TokenType,
-    line: usize,
+    pub line: usize,
 }
 
 impl Token {
     pub fn symbol(kind: TokenType, line: usize) -> Token {
         Token { kind, line }
     }
-
     pub fn eof(line: usize) -> Token {
         Token {
             kind: TokenType::Eof,
@@ -76,8 +75,6 @@ pub fn next_token(buffer: &mut Buffer) -> Token {
     }
 
     buffer.empty_space();
-
-    // check next character of the input
     match buffer.next_char() {
         Some('(') => Token::symbol(TokenType::BeginParethesis, buffer.line),
         Some(')') => Token::symbol(TokenType::CloseParenthesis, buffer.line),
@@ -91,7 +88,6 @@ pub fn next_token(buffer: &mut Buffer) -> Token {
 }
 
 pub fn number_token(buffer: &mut Buffer, c: char) -> Token {
-    // accumulate the digits in string, then convert to integer
     let mut digits: Vec<char> = vec![c];
 
     while let Some(&next) = buffer.peek_char() {
@@ -140,7 +136,6 @@ pub fn word_token(buffer: &mut Buffer, c: char) -> Token {
 fn test1_lexer() {
     let test1 = "( + * print  \n\n43257)   ";
     let mut buffer1 = Buffer::create_com_string(test1);
-
     assert_eq!(next_token(&mut buffer1), Token { kind: TokenType::BeginParethesis, line: 1 });
     assert_eq!(next_token(&mut buffer1), Token { kind: TokenType::Sum, line: 1 });
     assert_eq!(next_token(&mut buffer1), Token { kind: TokenType::Asterisk, line: 1 });
@@ -148,4 +143,22 @@ fn test1_lexer() {
     assert_eq!(next_token(&mut buffer1), Token { kind: TokenType::Integer(43257), line: 3 });
     assert_eq!(next_token(&mut buffer1), Token { kind: TokenType::CloseParenthesis, line: 3 });
     assert_eq!(next_token(&mut buffer1), Token { kind: TokenType::Eof, line: 3 });
+}
+
+#[test]
+#[rustfmt::skip]
+fn test2_lexer() {
+    let test2 = "print (4 * (39 + 3))";
+    let mut buffer2 = Buffer::create_com_string(test2);
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::Print, line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::BeginParethesis, line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::Integer(4), line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::Asterisk, line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::BeginParethesis, line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::Integer(39), line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::Sum, line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::Integer(3), line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::CloseParenthesis, line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::CloseParenthesis, line: 1 });
+    assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::Eof, line: 1 });
 }
