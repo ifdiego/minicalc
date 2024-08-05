@@ -133,7 +133,7 @@ pub fn word_token(buffer: &mut Buffer, c: char) -> Token {
 
 #[test]
 #[rustfmt::skip]
-fn test1_lexer() {
+fn print() {
     let test1 = "( + * print  \n\n43257)   ";
     let mut buffer1 = Buffer::create_com_string(test1);
     assert_eq!(next_token(&mut buffer1), Token { kind: TokenType::BeginParethesis, line: 1 });
@@ -147,7 +147,7 @@ fn test1_lexer() {
 
 #[test]
 #[rustfmt::skip]
-fn test2_lexer() {
+fn calc() {
     let test2 = "print (4 * (39 + 3))";
     let mut buffer2 = Buffer::create_com_string(test2);
     assert_eq!(next_token(&mut buffer2), Token { kind: TokenType::Print, line: 1 });

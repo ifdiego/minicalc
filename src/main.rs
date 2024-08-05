@@ -3,16 +3,20 @@ pub mod parser;
 
 use lexer::Buffer;
 use parser::Expression;
+use std::env;
+use std::fs;
 
 fn main() {
-    let test1 = "print (4 + (39 * 6))";
-    let mut buffer1 = Buffer::create_com_string(test1);
+    let args: Vec<String> = env::args().collect();
+    let file_path = &args[1];
+    let content = fs::read_to_string(file_path).expect("should be able to read the file");
 
+    let mut buffer1 = Buffer::create_com_string(&content);
     println!("Minicalc interpreter");
 
     let ast = parser::parse(&mut buffer1);
-    println!("ast: {:?}", ast);
-    println!("expression value: {}", eval(&ast));
+    println!("Ast: {:?}", ast);
+    println!("Expression value: {}", eval(&ast));
 }
 
 fn eval(e: &Expression) -> i64 {
@@ -24,14 +28,14 @@ fn eval(e: &Expression) -> i64 {
 }
 
 #[test]
-fn test1_main() {
+fn constant() {
     let mut buffer = Buffer::create_com_string("print 42");
     let e = parser::parse(&mut buffer);
     assert_eq!(eval(&e), 42);
 }
 
 #[test]
-fn test2_main() {
+fn calc() {
     let mut buffer = Buffer::create_com_string("print (4 + (39 * 6))");
     let e = parser::parse(&mut buffer);
     assert_eq!(eval(&e), 238);

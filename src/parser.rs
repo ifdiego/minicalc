@@ -61,14 +61,14 @@ fn evaluate(buffer: &mut Buffer) -> Expression {
 }
 
 #[test]
-fn test1_parser() {
+fn constant() {
     let mut buffer = Buffer::create_com_string("print 42");
     let tree = parse(&mut buffer);
     assert_eq!(tree, Expression::Constant(42));
 }
 
 #[test]
-fn test2_parser() {
+fn sum() {
     let mut buffer = Buffer::create_com_string("print (4 + 7)");
     let tree = parse(&mut buffer);
     assert_eq!(
@@ -81,7 +81,7 @@ fn test2_parser() {
 }
 
 #[test]
-fn test3_parser() {
+fn calc() {
     let mut buffer = Buffer::create_com_string("print (4 + (39 * 6))");
     let tree = parse(&mut buffer);
     assert_eq!(
